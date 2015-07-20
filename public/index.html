@@ -7,8 +7,168 @@
 
 	<script src="js/master.js"></script>
 
+	<style type="text/css">
+
+		section{
+			margin:10px;
+		}
+
+		article{
+			display: block;
+			position: relative;
+		}
+
+		#wrapper{
+			width: 980px;
+			display: block;
+			margin:0 auto;
+			position: relative;
+		}
+
+		.right15{
+			position: absolute;
+  			right: 15px;	
+		}
+
+		.right0{
+			position: absolute;
+  			right: 0px;	
+		}
+
+		.pointer{
+			cursor: pointer;
+		}
+
+		.clear{
+			clear: both;
+		}
+
+		.inline-block{
+			display: inline-block;
+		}
+
+		.error{
+			color:red;
+			font-weight: 900;
+		}
+
+		#popup{
+		  width: 480px;
+		  height: 350px;
+		  border: 2px solid;
+		  box-shadow: 2px 2px 2px 2px;
+		  position: absolute;
+		  left:490px;
+		  top: 100px;
+		  background-color: royalblue;
+		}	
+
+		#wrapper h2{
+			display: block;
+
+		}
+
+		#wrapper .selectBox{
+			width: 350px;
+
+		}
+
+		#searchLocationInput{
+			border:none;
+		}
+
+	</style>
+
 </head>
 <body ng-controller="masterCntrl">
-	{{ test }}
+
+	<div id="wrapper">
+		
+		<section class="basic_form">
+			<h2> Campaign Settings </h2>
+			<section>
+				<label for="nameInput"> Name : </label>
+					<input id="nameInput" type="text" ng-model="form.campaign.name" placeholder="Please enter your name">
+					<span class="error" ng-if="nameNotOK"> error </span>
+				<button ng-disabled="nameNotOK" class="pointer" ng-click="saveJSON()"> Save </button>
+			</section>
+
+			<section>
+				<label for="bidInput"> Bids : </label>
+				<span class="pointer" ng-click="setBidFalse()"> Edit </span>
+			</section>
+
+			<section>
+				<label for="locationInput"> Location : </label>
+				<ul>
+					<li ng-repeat="location in form.campaign.location.selected_values"> {{ location }} 
+						<span class="pointer" ng-click="removeLocation($index)"> Remove </span> </li>
+				</ul>
+				<div>
+					<label for="searchLocationInput"> Search : </label>
+					<div class="selectBox">
+						<input id="searchLocationInput" type="text" ng-model="locationFilter" placeholder="Look for a location">
+					
+						<article value="{{$index+1}}" ng-repeat="location in form.campaign.location.location_list | filter: locationFilter"> {{location}} 
+							<span class="pointer right0" ng-click="addLocation(location)"> Add </span>
+						</article>
+					</div>
+					
+
+				</div>
+			</section>
+
+			<span ng-click="getLogFile()"> Exam DB </span>
+
+			<p> {{ dataLog }} </p>
+
+		</section>
+		
+
+	</div>
+
+
+	<div id="popup" ng-if="!bidHidden">
+		<section>
+			<div class="right15 pointer" ng-click="closeBid()"> X </div>
+			<div class="clear"> </div>
+			<h2> Bids : </h2>
+			<section class="fields">
+				<section>
+					<label > Bidding Options : </label>
+					<select ng-model="bidTemp.bidding_option"
+					      ng-value="bid.id" ng-selected="bid.id == form.campaign.bids.saved_values.bidding_option" ng-options="bid.id as bid.value for bid in form.campaign.bids.bidding_options_list" >
+					</select>
+					<label for="maxCPCInput"> Max cpc : </label>
+					$ <input id="maxCPCInput" type="number" min="0" ng-model="bidTemp.max_cpc">
+					<span class="error" ng-show="bidTemp.max_cpc <= 0 || bidTemp.max_cpc == null"> error </span>
+				</section>
+				
+				<section>
+					<label for="bidInput"> Budget : </label>
+					$ <input type="number" min="0" ng-model="bidTemp.budget">
+					<span class="error" ng-show="bidTemp.budget <= 0 || bidTemp.budget == null"> error </span>
+				</section>
+
+
+				<section>
+					<label for="bidInput"> Delivery Method : </label>
+					<div class="inline-block">
+						<select ng-model="bidTemp.delivery_method"
+					      ng-value="bid.id" ng-selected="method.id == form.campaign.bids.saved_values.delivery_method" ng-options="method.id as method.value for method in form.campaign.bids.delivery_method_list" >
+						</select>
+					</div>
+				</section>
+
+			</section>
+
+			<section>
+				<button ng-disabled="bidTemp.budget <= 0 || bidTemp.budget == null || bidTemp.max_cpc <= 0 || bidTemp.max_cpc == null" ng-click="saveBid()"> Save </button> <button ng-click="closeBid()"> Cancel </button>
+			</section>
+
+		</section>
+	</div>
+
+
 </body>
 </html>
